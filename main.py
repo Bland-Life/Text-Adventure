@@ -18,7 +18,7 @@ game_frame.grid(row=0, column=0)
 scrollbar = Scrollbar(root, bg=WINDOW_BACKGROUND)
 scrollbar.grid(row=0, column=3, rowspan=2, sticky=NS)
 
-text_field = Text(game_frame, yscrollcommand=scrollbar.set)
+text_field = Text(game_frame, yscrollcommand=scrollbar.set, wrap=WORD)
 text_field.config(bg="#64463F", fg=TEXT_COLOR, font=("High Tower Text", 14, "bold"), border=0)
 text_field.insert(END, "Press ENTER to start!")
 text_field.config(state=DISABLED)

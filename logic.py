@@ -1,6 +1,6 @@
 from tkinter import *
 import time
-TEXT_SPEED = 1
+TEXT_SPEED = 20
 
 
 def edit_field(func):
@@ -48,28 +48,40 @@ def start_game(text_field: Text, entry: Entry):
     options = False
     ignore = False
     current_choice = None
+    skip = 0
     for i, line in enumerate(story):
-        
-        # IGNORES LINES UNTIL WE REACH THE BLOCK FOR THE CHOSEN OPTION
-        if ignore:
-            if line.strip() == f"|{current_choice}":
-                ignore = False
-                write_field(field=text_field, new_text="\n")
-                continue
-            else:
-                continue
-        
+
         # THE NEXT LINE AFTER THIS IS TRUE SHOULD BE OUR OPTIONS
         if line.strip() == "[CHOOSE]":
             options = True
             continue
 
+        # IF OPTIONS POP UP WHILE IGNORING TEXT, IF THOSE OPTIONS MATCH THE BLOCK WE'RE GOING TO THEN SKIP THOSE BLOCKS
         if options:
-            option_list = [option.strip() for option in line.split(", ")]   
+            option_list = [option.strip() for option in line.split(", ")]
+            if ignore:
+                print("True")
+                if current_choice in option_list:
+                    skip += 1
+                print(skip)
+                options = False
+                continue  
             current_choice = listen_to_entry(entry, option_list)
             ignore = True
             options = False
             continue
+
+        # IGNORES LINES UNTIL WE REACH THE BLOCK FOR THE CHOSEN OPTION, SKIP OVER SIMILAR OPTIONS
+        if ignore:
+            if line.strip() == f"|{current_choice}" and skip <= 0:
+                ignore = False
+                write_field(field=text_field, new_text="\n")
+                continue
+            elif line.strip() == f"|{current_choice}" and skip > 0:
+                skip -= 1
+                continue
+            else:
+                continue
 
         # A MINUS - SYMBOL SIGNIFIES THE END OF OUR GAME
         if line.strip() == "-":
